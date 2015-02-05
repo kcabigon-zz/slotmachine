@@ -86,8 +86,8 @@ class ViewController: UIViewController {
     }
     
     func betMaxButtonPressed (button: UIButton) {
-        if credits <= 0 {
-            showAlertWithText(header: "No More Credits", message: "Reset Game")
+        if credits < 5 {
+            showAlertWithText(header: "Not Enough Credits", message: "Reset Game")
         }
         else {
             if currentBet < 5 {
@@ -104,13 +104,32 @@ class ViewController: UIViewController {
     }
 
     func spinButtonPressed (button: UIButton) {
-        removeSlotImageViews()
-        slots = Factory.createSlots()
-        setUpSecondContainer(self.secondContainer)
-        var winningsMultiplier = SlotBrain.computeWinnings(slots)
-        winnings += (winningsMultiplier * currentBet)
-        currentBet = 0
-        updateMainView()
+        
+        if currentBet == 0 {
+            showAlertWithText(header: "Need Bet", message: "Bet at least 1 credit to spin")
+        }
+        else {
+            removeSlotImageViews()
+            slots = Factory.createSlots()
+            setUpSecondContainer(self.secondContainer)
+            var winningsMultiplier = SlotBrain.computeWinnings(slots)
+            winnings += (winningsMultiplier * currentBet)
+            currentBet = 0
+            updateMainView()
+            
+            if winningsMultiplier == 18 {
+                showAlertWithText(header: "+18!", message: "You spun all flushes!")
+            }
+            
+            if winningsMultiplier == 59 {
+                showAlertWithText(header: "+59!", message: "You spun all 3-of-a-kind!")
+            }
+            
+            if winningsMultiplier == 1018 {
+                showAlertWithText(header: "+1018!", message: "You spun all straights!")
+            }
+
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -150,7 +169,7 @@ class ViewController: UIViewController {
     
     func setUpSecondContainer(containerView: UIView) {
         // Creates the 9 slot spaces for each card
-        
+                
         for var containerNumber = 0; containerNumber < kNumberOfContainers; ++containerNumber {
             
             for var slotNumber = 0; slotNumber < kNumberOfSlots; ++slotNumber {
@@ -166,11 +185,10 @@ class ViewController: UIViewController {
                     slotImageView.image = UIImage(named: "Ace")
                 }
                 
-                slotImageView.backgroundColor = UIColor.yellowColor()
-                slotImageView.frame = CGRect(x: containerView.bounds.origin.x + (containerView.bounds.size.width * CGFloat(containerNumber) * kThird) + kMarginForSlot, y: containerView.bounds.origin.y + (containerView.bounds.size.height * CGFloat(slotNumber) * kThird) + kMarginForSlot, width: containerView.frame.width * kThird - (2*kMarginForSlot), height: containerView.frame.height * kThird - (2*kMarginForSlot))
+                slotImageView.frame = CGRect(x: containerView.bounds.origin.x + (containerView.bounds.size.width * CGFloat(containerNumber) * self.kThird) + self.kMarginForSlot, y: containerView.bounds.origin.y + (containerView.bounds.size.height * CGFloat(slotNumber) * self.kThird) + self.kMarginForSlot, width: containerView.frame.width * self.kThird - (2*self.kMarginForSlot), height: containerView.frame.height * self.kThird - (2*self.kMarginForSlot))
                 
                 containerView.addSubview(slotImageView)
-                
+
             }
         }
     }
